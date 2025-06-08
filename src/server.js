@@ -1,6 +1,7 @@
 import app from './app.js';
 import { PORT } from './config/index.js';
 import cors from 'cors';
+import { connectDB } from './db.js';
 
 
 
@@ -10,6 +11,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+await connectDB();
 app.get('/health-check', (req, res) => {
   res.status(200).json({
     status: 'success',

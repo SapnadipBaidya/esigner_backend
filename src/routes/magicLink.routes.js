@@ -1,4 +1,3 @@
-import { Router } from 'express';
 import * as MagicLinkController from '../controllers/magicLink.controller.js';
 
 
