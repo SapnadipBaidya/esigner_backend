@@ -1,6 +1,8 @@
 import Templates from '../models/Templates.js';
 import Template from '../models/Templates.js';
 import path from 'path';
+import os from "os";
+import fs from "fs";
 
 export async function getTemplateData(req, res) {
   try {
@@ -31,13 +33,14 @@ export async function getTemplateData(req, res) {
 
 export async function getTemplatePDF(req, res) {
   try {
-    const { id } = req.params;
+    const { id } = req.query;
+    console.log("_id",id)
     const template = await Templates.findById(id);
     if (!template || !template.pdfPath) {
       return res.status(404).json({ error: 'Template or PDF not found' });
     }
 
-    const filePath = path.join(process.cwd(), template.pdfPath); // ✅ fixed
+    const filePath =  template.pdfPath; // ✅ fixed
     res.sendFile(filePath);
   } catch (error) {
     console.error("Error in getTemplatePDF:", error);
