@@ -8,7 +8,7 @@ const AssignedSignerSchema = new mongoose.Schema({
 });
 
 const FieldDataSchema = new mongoose.Schema({
-  fieldId: mongoose.Schema.Types.ObjectId,
+  fieldId: String, // but this is id in Field schema not the _id
   signerId: mongoose.Schema.Types.ObjectId,
   value: String,
   signed: Boolean,
