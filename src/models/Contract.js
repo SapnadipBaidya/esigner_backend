@@ -13,6 +13,8 @@ const FieldDataSchema = new mongoose.Schema({
   value: String,
   signed: Boolean,
   signedAt: Date,
+  imageData: String,   // <-- add this
+  imageId: String      // <-- add this
 });
 
 const ContractSchema = new mongoose.Schema({
@@ -20,6 +22,8 @@ const ContractSchema = new mongoose.Schema({
   templateId: { type: mongoose.Schema.Types.ObjectId, ref: 'Template', required: true },
   adminId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   status: { type: String, enum: ['draft', 'sent', 'partially_signed', 'completed'], default: 'draft' },
+  imageData: {type: String, required: false }, 
+  imageId:{ type:String ,required:false},
   assignedSigners: [AssignedSignerSchema],
   fieldData: [FieldDataSchema],
   filledPdfPath: String,

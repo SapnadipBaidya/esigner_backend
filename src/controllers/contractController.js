@@ -39,6 +39,8 @@ try {
       return res.status(404).json({ error: "Contract not found" });
     }
     // Replace or update fieldData
+
+    console.log("fieldData",fieldData)
     contract.fieldData = fieldData;
     await contract.save();
     res.json({ success: true, contract });
