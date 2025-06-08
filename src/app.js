@@ -3,6 +3,7 @@ import express from 'express';
 import magicLinkRoutes from './routes/magicLink.routes.js';
 import templateRoutes from './routes/templateRoutes.js'
 import fieldRoutes from './routes/fieldRoutes.js'
+import contractRoutes from './routes/contractRoutes.js'
 import cors from 'cors';
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/magic-link', magicLinkRoutes);
 app.use('/template', templateRoutes);
 app.use('/fields', fieldRoutes);
+app.use('/contract', contractRoutes);
 
 // Handle OPTIONS requests for CORS preflight
 

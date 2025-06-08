@@ -1,71 +1,64 @@
-import Contract from '../models/Contract.js';
-import fs from 'fs';
-import path from 'path';
+import ContractSchema from '../models/Contract.js';
 
 
-export async function submitContract(req, res) {
-  try {
-    const { templateId, fields, submittedBy } = req.body;
 
-    if (!templateId || !fields) {
-      return res.status(400).json({ error: "templateId and fields are required" });
+export async function createContract(req, res) {
+
+try {
+    const { templateId, adminId, assignedSigners,contractName } = req.body;
+    if (!templateId || !adminId) {
+      return res.status(400).json({ error: "templateId and adminId are required" });
     }
-
-    const newContract = await Contract.create({
+    const contract = new ContractSchema({
       templateId,
-      fields,
-      submittedBy,
+      adminId,
+      assignedSigners: assignedSigners || [],
+      status: 'draft',
+      contractName
     });
-
-    res.json({ success: true, contract: newContract });
-  } catch (err) {
-    console.error("Error submitting contract:", err);
-    res.status(500).json({ error: "Failed to submit contract" });
-  }
-}
-
-export async function getFilledPdf(req, res) {
-  try {
-    const { contractId } = req.params;
-    const contract = await Contract.findById(contractId);
-    if (!contract || !contract.filledPdfPath) {
-      return res.status(404).json({ error: "Filled PDF not found" });
-    }
-
-    const filePath = path.resolve(contract.filledPdfPath);
-    res.sendFile(filePath);
-  } catch (error) {
-    console.error("Error in getFilledPdf:", error);
-    res.status(500).json({ error: "Failed to serve filled PDF" });
-  }
-}
-
-export async function uploadFilledPdf(req, res) {
-  try {
-    const { contractId } = req.body;
-    if (!contractId || !req.file) {
-      return res.status(400).json({ error: "Missing contractId or file" });
-    }
-
-    const contract = await Contract.findById(contractId);
-    if (!contract) return res.status(404).json({ error: "Contract not found" });
-
-    contract.filledPdfPath = req.file.path;
     await contract.save();
-
-    res.json({ success: true, path: contract.filledPdfPath });
+    res.status(201).json({ success: true, contract });
   } catch (err) {
-    console.error("uploadFilledPdf error:", err);
-    res.status(500).json({ error: "Upload failed" });
+    console.error("Error creating contract:", err);
+    res.status(500).json({ error: "Failed to create contract" });
+  }
+
+}
+
+
+export async function findAndEditContract(req, res) {
+
+try {
+    const { contractId, templateId, fieldData } = req.body;
+    if (!contractId || !templateId || !Array.isArray(fieldData)) {
+      return res.status(400).json({ error: "contractId, templateId, and fieldData[] are required" });
+    }
+    // Find contract
+    const contract = await ContractSchema.findOne({ _id: contractId, templateId });
+    if (!contract) {
+      return res.status(404).json({ error: "Contract not found" });
+    }
+    // Replace or update fieldData
+    contract.fieldData = fieldData;
+    await contract.save();
+    res.json({ success: true, contract });
+  } catch (err) {
+    console.error("Error updating fields in contract:", err);
+    res.status(500).json({ error: "Failed to update fields" });
   }
 }
+
 
 export async function getContractsByTemplateId(req, res) {
   try {
-    const templateId = req.params.templateId;
-    if (!templateId) return res.status(400).json({ error: "Missing template ID" });
+    const { templateId } = req.body; // you can use req.params if using /:templateId
+    if (!templateId) {
+      return res.status(400).json({ error: "templateId is required" });
+    }
 
-    const contracts = await Contract.find({ templateId });
+    // Find all contracts with the given templateId
+    const contracts = await ContractSchema.find({ templateId });
+
     res.json({ success: true, contracts });
   } catch (err) {
     console.error("Error fetching contracts:", err);
