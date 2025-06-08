@@ -1,8 +1,5 @@
 import Templates from '../models/Templates.js';
 import Template from '../models/Templates.js';
-import path from 'path';
-import os from "os";
-import fs from "fs";
 
 export async function getTemplateData(req, res) {
   try {
